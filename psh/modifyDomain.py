@@ -32,26 +32,36 @@ for component in gcal.walk():
         #print(organizer_params)
         #print(component.get('organizer').replace('@stif.info','@iledefrance-mobilites.fr'))
         component['organizer'] = vCalAddress(component.get('organizer').replace('@stif.info','@iledefrance-mobilites.fr'))
-#       for i in organizer_params.keys():
-#               component['organizer'].params[i] = organizer_params[i]
+#	for i in organizer_params.keys():
+#		component['organizer'].params[i] = organizer_params[i]
         component['organizer'].params = organizer_params
         #print(component['organizer'])
         #print(component['organizer'].params)
         #print(component['organizer'].params)
         #print(component.get('organizer'))
         #print(component.get('attendee'))
-        attendees_tab = []
-        nbAttendees = len(component['attendee'])
-        i=0
-        while i < nbAttendees:
-                aCalAddress = vCalAddress(component['attendee'][i].replace('@stif.info','@iledefrance-mobilites.fr'))
-                if hasattr(component['attendee'][i], 'params'):
-                        attendees_params = component['attendee'][i].params
-                        print(attendees_params)
-                        aCalAddress.params = attendees_params
-                attendees_tab.append(aCalAddress)
-                i=i+1
-        component['attendee'] = attendees_tab
+        if type(component.get('attendee')) is list:
+		attendees_tab_stif = [] + component['attendee']
+	else:
+		attendees_tab_stif = [component['attendee']]
+	nbAttendees = len(component['attendee'])
+	i=0
+	#while i < nbAttendees:
+	print attendees_tab_stif
+	attendees_tab = []
+	for aCalAttendee in attendees_tab_stif:
+		#print(aCalAttendee)
+		#aCalAddress = vCalAddress(component['attendee'][i].replace('@stif.info','@iledefrance-mobilites.fr'))
+		#print(aCalAttendee)
+		aCalAddress = vCalAddress(aCalAttendee.replace('@stif.info','@iledefrance-mobilites.fr'))
+		#if hasattr(component['attendee'][i], 'params'):
+		if hasattr(aCalAttendee, 'params'):
+			attendees_params = aCalAttendee.params
+			#print(attendees_params)
+			aCalAddress.params = attendees_params
+		attendees_tab.append(aCalAddress)
+		i=i+1
+	component['attendee'] = attendees_tab
         #print(component.get('attendee'))
 
 g_idf.write(gcal.to_ical())
